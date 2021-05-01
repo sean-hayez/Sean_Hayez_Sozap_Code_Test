@@ -47,11 +47,6 @@ public class LevelInfo
         Save();
     }
 
-    public bool ClearedLevel()
-    {
-        return mBestTime != int.MaxValue;
-    }
-
     public int GetAttempts()
     {
         return mAttempts;
@@ -61,5 +56,10 @@ public class LevelInfo
     {
         TimeSpan duration = TimeSpan.FromSeconds(mBestTime);
         return duration.ToString(@"m\:s");
+    }
+
+    public bool ClearedLevel()
+    {
+        return mBestTime != int.MaxValue;
     }
 }

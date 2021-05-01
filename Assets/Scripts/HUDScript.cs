@@ -11,6 +11,8 @@ public class HUDScript : MonoBehaviour
     private Text mTextTimer;
     private GameObject mNextLevel;
 
+    private bool mLevelCompleted = false;
+
     void Awake()
     {
         mLevelName = SceneManager.GetActiveScene().name;
@@ -33,8 +35,11 @@ public class HUDScript : MonoBehaviour
 
     void Update()
     {
-        TimeSpan duration = TimeSpan.FromSeconds(Time.timeSinceLevelLoad);
-        mTextTimer.text = "Timer: " + duration.ToString(@"m\:s");
+        if (!mLevelCompleted)
+        {
+            TimeSpan duration = TimeSpan.FromSeconds(Time.timeSinceLevelLoad);
+            mTextTimer.text = "Timer: " + duration.ToString(@"m\:s");
+        }
     }
 
     public void OnResetButtonClicked()
@@ -52,10 +57,14 @@ public class HUDScript : MonoBehaviour
         SceneManager.LoadScene(LevelManager.GetNextLevel(mLevelName));
     }
 
-    public void OnLevelCompleted()
+    public void LevelCompleted()
     {
-        Debug.Assert(mNextLevel != null);
-        mNextLevel.SetActive(true);
-        mLevelInfo.SetTime((int)Time.timeSinceLevelLoad);
+        if (!mLevelCompleted)
+        {
+            Debug.Assert(mNextLevel != null);
+            mNextLevel.SetActive(true);
+            mLevelInfo.SetTime((int)Time.timeSinceLevelLoad);
+            mLevelCompleted = true;
+        }
     }
 }

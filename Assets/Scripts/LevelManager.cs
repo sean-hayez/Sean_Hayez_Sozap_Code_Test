@@ -7,21 +7,21 @@ public static class LevelManager
 {
     public static List<string> AvailableLevels { get; private set; }
 
-    private static List<string> AllLevels;
+    private static List<string> AllLevels_;
     private static Dictionary<string, LevelInfo> LevelInfos_;
 
     static LevelManager()
     {
-        AllLevels = new List<string>();
         AvailableLevels = new List<string>();
+        AllLevels_ = new List<string>();
         LevelInfos_ = new Dictionary<string, LevelInfo>();
         Reload();
     }
 
     public static void Reload()
     {
-        AllLevels.Clear();
         AvailableLevels.Clear();
+        AllLevels_.Clear();
         LevelInfos_.Clear();
 
         bool addNextLevel = true;
@@ -34,7 +34,7 @@ public static class LevelManager
                 continue;
             }
 
-            AllLevels.Add(fileName);
+            AllLevels_.Add(fileName);
 
             var jsonPath = Path.Combine(Application.persistentDataPath, fileName + ".json");
             if (!File.Exists(jsonPath))
@@ -63,12 +63,12 @@ public static class LevelManager
             LevelInfos_[fileName] = levelInfo;
         }
 
-        Debug.Assert(AllLevels.Count > 0);
+        Debug.Assert(AllLevels_.Count > 0);
 
-        AllLevels.Sort();
+        AllLevels_.Sort();
         if (AvailableLevels.Count == 0)
         {
-            AvailableLevels.Add(AllLevels[0]);
+            AvailableLevels.Add(AllLevels_[0]);
         }
     }
 
@@ -80,18 +80,18 @@ public static class LevelManager
 
     public static string GetNextLevel(string currentLevel)
     {
-        int index = AllLevels.FindIndex((string level) =>
+        int index = AllLevels_.FindIndex((string level) =>
         {
             return level == currentLevel;
         });
         Debug.Assert(index != -1);
-        index = Mathf.Clamp(index + 1, 0, AllLevels.Count - 1);
-        return AllLevels[index];
+        index = Mathf.Clamp(index + 1, 0, AllLevels_.Count - 1);
+        return AllLevels_[index];
     }
 
     public static string GetLevelByIndex(int index)
     {
-        Debug.Assert(index >= 0 && index < AllLevels.Count);
-        return AllLevels[index];
+        Debug.Assert(index >= 0 && index < AllLevels_.Count);
+        return AllLevels_[index];
     }
 }

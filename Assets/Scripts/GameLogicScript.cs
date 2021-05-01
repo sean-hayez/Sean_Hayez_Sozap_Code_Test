@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class GameLogicScript : MonoBehaviour
 {
@@ -10,10 +9,10 @@ public class GameLogicScript : MonoBehaviour
     private GameObject[] mBoxes;
     private GameObject[] mBoxHolders;
 
+    private HUDScript mHUDScript;
+
     private float mAnimationTime = 0.2f;
     private bool mIsMoving = false;
-
-    private UnityEvent mLevelCompletedEvent;
 
     void Awake()
     {
@@ -24,10 +23,7 @@ public class GameLogicScript : MonoBehaviour
 
         var hudPrefab = Resources.Load("Prefabs/HUD") as GameObject;
         var hudGameObject = Instantiate(hudPrefab);
-        var hudScript = hudGameObject.GetComponentInChildren<HUDScript>();
-
-        mLevelCompletedEvent = new UnityEvent();
-        mLevelCompletedEvent.AddListener(hudScript.OnLevelCompleted);
+        mHUDScript = hudGameObject.GetComponentInChildren<HUDScript>();
     }
 
     // http://answers.unity.com/answers/1146980/view.html
@@ -108,7 +104,7 @@ public class GameLogicScript : MonoBehaviour
         }
     }
 
-    bool CheckWinCondition()
+    bool DidCompleteLevel()
     {
         foreach (var boxHolder in mBoxHolders)
         {
@@ -126,9 +122,9 @@ public class GameLogicScript : MonoBehaviour
 
     void Update()
     {
-        if (CheckWinCondition())
+        if (DidCompleteLevel())
         {
-            mLevelCompletedEvent.Invoke();
+            mHUDScript.LevelCompleted();
             return;
         }
 
