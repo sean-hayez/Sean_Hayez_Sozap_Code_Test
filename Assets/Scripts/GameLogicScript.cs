@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameLogicScript : MonoBehaviour
@@ -7,7 +8,7 @@ public class GameLogicScript : MonoBehaviour
     private GameObject mPlayer;
     private GameObject[] mWalls;
     private GameObject[] mBoxes;
-    private GameObject[] mBoxHolders;
+    private List<BoxHolderScript> mBoxHolderScripts;
 
     private HUDScript mHUDScript;
 
@@ -19,7 +20,13 @@ public class GameLogicScript : MonoBehaviour
         mPlayer = GameObject.FindGameObjectWithTag("Player");
         mWalls = GameObject.FindGameObjectsWithTag("Wall");
         mBoxes = GameObject.FindGameObjectsWithTag("Box");
-        mBoxHolders = GameObject.FindGameObjectsWithTag("Box Holder");
+
+        mBoxHolderScripts = new List<BoxHolderScript>();
+        var boxHolders = GameObject.FindGameObjectsWithTag("Box Holder");
+        foreach (var boxHolder in boxHolders)
+        {
+            mBoxHolderScripts.Add(boxHolder.GetComponent<BoxHolderScript>());
+        }
 
         var hudPrefab = Resources.Load("Prefabs/HUD") as GameObject;
         var hudGameObject = Instantiate(hudPrefab);
@@ -106,18 +113,12 @@ public class GameLogicScript : MonoBehaviour
 
     bool DidCompleteLevel()
     {
-        foreach (var boxHolder in mBoxHolders)
+        bool completedLevel = true;
+        foreach (var boxHolder in mBoxHolderScripts)
         {
-            var box = Array.Find(mBoxes, (GameObject go) =>
-            {
-                return boxHolder.transform.position == go.transform.position;
-            });
-            if (box == null)
-            {
-                return false;
-            }
+            completedLevel &= boxHolder.IsOverlapping(mBoxes);
         }
-        return true;
+        return completedLevel;
     }
 
     void Update()
