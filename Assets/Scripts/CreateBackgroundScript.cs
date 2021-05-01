@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CreateBackgroundScript : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
         var backgroundPrefab = Resources.Load("Prefabs/Background") as GameObject;
         var backgroundGameObject = Instantiate(backgroundPrefab);

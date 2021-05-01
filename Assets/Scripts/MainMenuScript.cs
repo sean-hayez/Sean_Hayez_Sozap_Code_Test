@@ -9,23 +9,14 @@ public class MainMenuScript : MonoBehaviour
 {
     private Dropdown mSelectLevel;
 
-    void Start()
+    void Awake()
     {
         var selectLevelGameObject = GameObject.Find("SelectLevel");
         mSelectLevel = selectLevelGameObject.GetComponent<Dropdown>();
-
-        List<string> levels = new List<string>();
-        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
-        {
-            var fileName = Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(i));
-            if (fileName.StartsWith("Level"))
-            {
-                levels.Add(fileName);
-            }
-        }
-
         mSelectLevel.ClearOptions();
-        mSelectLevel.AddOptions(levels);
+
+        LevelManager.Reload();
+        mSelectLevel.AddOptions(LevelManager.AvailableLevels);
     }
 
     public void OnPlayButtonClicked()

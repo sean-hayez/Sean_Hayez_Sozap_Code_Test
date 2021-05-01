@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
-public class LevelManagerScript : MonoBehaviour
+public class GameLogicScript : MonoBehaviour
 {
     private GameObject mPlayer;
     private GameObject[] mWalls;
@@ -16,7 +17,7 @@ public class LevelManagerScript : MonoBehaviour
 
     private UnityEvent mLevelCompletedEvent;
 
-    void Start()
+    void Awake()
     {
         mPlayer = GameObject.FindGameObjectWithTag("Player");
         mWalls = GameObject.FindGameObjectsWithTag("Wall");
@@ -29,6 +30,9 @@ public class LevelManagerScript : MonoBehaviour
 
         mLevelCompletedEvent = new UnityEvent();
         mLevelCompletedEvent.AddListener(hudScript.OnLevelCompleted);
+
+        var info = LevelManager.GetLevelInfo(SceneManager.GetActiveScene().name);
+        info.IncrementTimesPlayed();
     }
 
     // http://answers.unity.com/answers/1146980/view.html
