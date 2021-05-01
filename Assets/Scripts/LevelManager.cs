@@ -1,16 +1,13 @@
-using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public static class LevelManager
 {
-    public static List<string> AllLevels { get; private set; }
     public static List<string> AvailableLevels { get; private set; }
 
+    private static List<string> AllLevels;
     private static Dictionary<string, LevelInfo> LevelInfos_;
 
     static LevelManager()
@@ -27,7 +24,7 @@ public static class LevelManager
         AvailableLevels.Clear();
         LevelInfos_.Clear();
 
-        bool levelCleared = true;
+        bool addNextLevel = true;
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
             var fullFileName = Path.GetFileName(SceneUtility.GetScenePathByBuildIndex(i));
@@ -48,15 +45,22 @@ public static class LevelManager
                 }
             }
 
-            if (levelCleared)
+            LevelInfo levelInfo = new LevelInfo(jsonPath);
+
+            // Will at least always add the first level
+            if (addNextLevel)
             {
-                AvailableLevels.Add(fileName);
+                var levelName = fileName;
+                if (levelInfo.ClearedLevel())
+                {
+                    levelName += string.Format(" | Best {0}", levelInfo.GetBestTime());
+                }
+                AvailableLevels.Add(levelName);
             }
 
-            LevelInfo info = new LevelInfo(jsonPath);
-            levelCleared = info.ClearedLevel();
+            addNextLevel = levelInfo.ClearedLevel();
 
-            LevelInfos_[fileName] = info;
+            LevelInfos_[fileName] = levelInfo;
         }
 
         Debug.Assert(AllLevels.Count > 0);
@@ -76,12 +80,18 @@ public static class LevelManager
 
     public static string GetNextLevel(string currentLevel)
     {
-        int index = AvailableLevels.FindIndex((string level) =>
+        int index = AllLevels.FindIndex((string level) =>
         {
             return level == currentLevel;
         });
         Debug.Assert(index != -1);
-        index = Mathf.Clamp(index + 1, 0, AvailableLevels.Count - 1);
-        return AvailableLevels[index];
+        index = Mathf.Clamp(index + 1, 0, AllLevels.Count - 1);
+        return AllLevels[index];
+    }
+
+    public static string GetLevelByIndex(int index)
+    {
+        Debug.Assert(index >= 0 && index < AllLevels.Count);
+        return AllLevels[index];
     }
 }

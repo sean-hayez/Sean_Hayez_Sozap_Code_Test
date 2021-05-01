@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelInfo
@@ -10,7 +8,7 @@ public class LevelInfo
     private int mBestTime;
 
     [SerializeField]
-    private int mTimesPlayed;
+    private int mAttempts;
 
     private string mJsonPath;
 
@@ -18,8 +16,20 @@ public class LevelInfo
     {
         mJsonPath = jsonPath;
         mBestTime = int.MaxValue;
-        mTimesPlayed = 0;
+        mAttempts = 0;
         Load();
+    }
+
+    private void Load()
+    {
+        Debug.Assert(File.Exists(mJsonPath));
+        JsonUtility.FromJsonOverwrite(File.ReadAllText(mJsonPath), this);
+    }
+
+    private void Save()
+    {
+        Debug.Assert(File.Exists(mJsonPath));
+        File.WriteAllText(mJsonPath, JsonUtility.ToJson(this));
     }
 
     public void SetTime(int time)
@@ -31,9 +41,9 @@ public class LevelInfo
         }
     }
 
-    public void IncrementTimesPlayed()
+    public void IncrementAttempts()
     {
-        ++mTimesPlayed;
+        ++mAttempts;
         Save();
     }
 
@@ -42,20 +52,14 @@ public class LevelInfo
         return mBestTime != int.MaxValue;
     }
 
-    private void Load()
+    public int GetAttempts()
     {
-        Debug.Log("Loading...");
-        Debug.Assert(File.Exists(mJsonPath));
-        JsonUtility.FromJsonOverwrite(File.ReadAllText(mJsonPath), this);
-        Debug.Log(string.Format("Loaded '{0}' with Time: {1}, Times: {2}", mJsonPath, mBestTime, mTimesPlayed));
+        return mAttempts;
     }
 
-    private void Save()
+    public string GetBestTime()
     {
-        Debug.Log("Saving...");
-        Debug.Assert(File.Exists(mJsonPath));
-        File.WriteAllText(mJsonPath, JsonUtility.ToJson(this));
-        Debug.Log(string.Format("Saved '{0}' with Time: {1}, Times: {2}", mJsonPath, mBestTime, mTimesPlayed));
-        Debug.Log("JsonData: " + JsonUtility.ToJson(this));
+        TimeSpan duration = TimeSpan.FromSeconds(mBestTime);
+        return duration.ToString(@"m\:s");
     }
 }

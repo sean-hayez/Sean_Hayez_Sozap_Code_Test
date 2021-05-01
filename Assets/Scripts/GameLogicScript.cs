@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 public class GameLogicScript : MonoBehaviour
 {
@@ -30,9 +28,6 @@ public class GameLogicScript : MonoBehaviour
 
         mLevelCompletedEvent = new UnityEvent();
         mLevelCompletedEvent.AddListener(hudScript.OnLevelCompleted);
-
-        var info = LevelManager.GetLevelInfo(SceneManager.GetActiveScene().name);
-        info.IncrementTimesPlayed();
     }
 
     // http://answers.unity.com/answers/1146980/view.html

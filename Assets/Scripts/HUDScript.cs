@@ -9,20 +9,25 @@ public class HUDScript : MonoBehaviour
     private LevelInfo mLevelInfo;
 
     private Text mTextTimer;
-    private GameObject mNextLevelBtn;
+    private GameObject mNextLevel;
 
     void Awake()
     {
         mLevelName = SceneManager.GetActiveScene().name;
         mLevelInfo = LevelManager.GetLevelInfo(mLevelName);
+        mLevelInfo.IncrementAttempts();
 
-        GameObject timerGameObject = GameObject.Find("Timer");
+        var timerGameObject = GameObject.Find("Timer");
         mTextTimer = timerGameObject.GetComponent<Text>();
 
-        mNextLevelBtn = GameObject.Find("Next");
+        var attemptsGameObject = GameObject.Find("Attempts");
+        var attemptsText = attemptsGameObject.GetComponent<Text>();
+        attemptsText.text = "Attempts: " + mLevelInfo.GetAttempts();
+
+        mNextLevel = GameObject.Find("Next");
         if (!mLevelInfo.ClearedLevel())
         {
-            mNextLevelBtn.SetActive(false);
+            mNextLevel.SetActive(false);
         }
     }
 
@@ -49,8 +54,8 @@ public class HUDScript : MonoBehaviour
 
     public void OnLevelCompleted()
     {
-        Debug.Assert(mNextLevelBtn != null);
-        mNextLevelBtn.SetActive(true);
+        Debug.Assert(mNextLevel != null);
+        mNextLevel.SetActive(true);
         mLevelInfo.SetTime((int)Time.timeSinceLevelLoad);
     }
 }

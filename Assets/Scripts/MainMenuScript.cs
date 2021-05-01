@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,7 +18,8 @@ public class MainMenuScript : MonoBehaviour
 
     public void OnPlayButtonClicked()
     {
-        var levelName = mSelectLevel.options[mSelectLevel.value].text;
+        int index = mSelectLevel.options.IndexOf(mSelectLevel.options[mSelectLevel.value]);
+        string levelName = LevelManager.GetLevelByIndex(index);
         SceneManager.LoadScene(levelName);
     }
 
