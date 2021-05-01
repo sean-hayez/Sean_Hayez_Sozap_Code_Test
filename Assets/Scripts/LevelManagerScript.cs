@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LevelManagerScript : MonoBehaviour
 {
@@ -13,12 +14,21 @@ public class LevelManagerScript : MonoBehaviour
     private float mAnimationTime = 0.2f;
     private bool mIsMoving = false;
 
+    private UnityEvent mLevelCompletedEvent;
+
     void Start()
     {
         mPlayer = GameObject.FindGameObjectWithTag("Player");
         mWalls = GameObject.FindGameObjectsWithTag("Wall");
         mBoxes = GameObject.FindGameObjectsWithTag("Box");
         mBoxHolders = GameObject.FindGameObjectsWithTag("Box Holder");
+
+        var hudPrefab = Resources.Load("Prefabs/HUD") as GameObject;
+        var hudGameObject = Instantiate(hudPrefab);
+        var hudScript = hudGameObject.GetComponentInChildren<HUDScript>();
+
+        mLevelCompletedEvent = new UnityEvent();
+        mLevelCompletedEvent.AddListener(hudScript.OnLevelCompleted);
     }
 
     // http://answers.unity.com/answers/1146980/view.html
@@ -119,6 +129,7 @@ public class LevelManagerScript : MonoBehaviour
     {
         if (CheckWinCondition())
         {
+            mLevelCompletedEvent.Invoke();
             return;
         }
 
